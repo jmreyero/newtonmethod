@@ -1,0 +1,46 @@
+import argparse
+import sympy as sp
+from sympy.abc import x
+import pytest
+
+""" Approximate the roots of a function using Newton's method.
+Arguments (compulsory if calling from the command line)
+- function which roots have to be found.
+- an initial guess.
+- the number of times the method will be repeated.
+"""
+
+
+def newton_method(test=False):
+    """Apply the Newton's method to approximate the root of
+    a function. The initial guess and repetitions are specified
+    in the command line except for the test.
+
+    >>> print newton_method(test=['x**5-5*x**4+5*x**3+5*x**2-3*x-1', 0.5, 3])
+    0.694255540516819
+    """
+    if test:
+        fx, x0, reps = sp.S(test[0]), test[1], test[2]
+    else:
+        fx = args = get_args().parse_args()
+        fx, x0, reps = sp.S(args.function), args.start, args.repetitions
+
+    dydx = sp.diff(fx, x)
+    for rep in range(reps):
+        x0 = x0 - fx.subs(x, x0)/dydx.subs(x, x0)
+    return x0
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--function", "-f",
+                        help="Define a function")
+    parser.add_argument("--start", "-s",
+                        help="Initial guess", type=float)
+    parser.add_argument("--repetitions", "-r",
+                        help="Number of repetitions", type=int)
+    return parser
+
+
+if __name__ == '__main__':
+    print newton_method(test=['x**5-5*x**4+5*x**3+5*x**2-3*x-1', 0.5, 3])
