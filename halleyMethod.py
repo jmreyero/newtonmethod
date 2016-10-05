@@ -5,7 +5,7 @@ import sympy as sp
 from sympy.abc import x
 import pytest
 
-""" Approximate the roots of a function using Newton's method.
+""" Approximate the roots of a function using Halley's method.
 Arguments (compulsory if calling from the command line)
 - function which roots have to be found.
 - an initial guess.
@@ -13,12 +13,12 @@ Arguments (compulsory if calling from the command line)
 """
 
 
-def newton_method(test=False):
-    """Apply the Newton's method to approximate the root of
+def halley_method(test=False):
+    """Apply Halley's method to approximate the root of
     a function. The initial guess and repetitions are specified
     in the command line except for the test.
 
-    >>> print newton_method(test=['x**5-5*x**4+5*x**3+5*x**2-3*x-1', 0.5, 3])
+    >>> print halley_method(test=['x**5-5*x**4+5*x**3+5*x**2-3*x-1', 0.5, 3])
     0.694255540516819
     """
     if test:
@@ -28,9 +28,12 @@ def newton_method(test=False):
         fx, x0, reps = sp.S(args.function), args.start, args.repetitions
 
     dydx = sp.diff(fx, x)
+    dydx2 = sp.diff(dydx, x)
     for rep in range(reps):
         # Using evalf to get a numeric result
-        x0 = (x0 - fx.subs(x, x0)/dydx.subs(x, x0)).evalf()
+        x0 = (x0 - (2*fx.subs(x, x0)*dydx.subs(x, x0))/
+              (2*dydx.subs(x, x0)**2-
+               fx.subs(x, x0)*dydx2.subs(x, x0))).evalf()
     return x0
 
 
@@ -46,4 +49,4 @@ def get_args():
 
 
 if __name__ == '__main__':
-    print newton_method()
+    print halley_method()
